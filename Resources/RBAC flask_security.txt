@@ -1,0 +1,11 @@
+User tries to go to certain page
+
+Page redirects user to login form to authenticate himself
+
+User enters his credentials 
+
+If the username and password are valid, user will be issued a token with his accesses and role
+
+While credentials helps in authenticating the user while token helps in authorization
+
+if user with user token tries to enter admin dashboard, he will be prevented from accessing the page.
