@@ -4,6 +4,7 @@ from application.models import User, Role
 from application.config import LocalDevelopmentConfig
 from flask_security import Security, datastore, SQLAlchemyUserDatastore, hash_password
 from application.resources import api  # import the API instance from the resources module
+from werkzeug.security import generate_password_hash, check_password_hash  # import the password hashing functions from Werkzeug
 
 
 def create_app():
@@ -28,7 +29,7 @@ with app.app_context(): # all the crud operations and database initializations s
         user = app.security.datastore.create_user(
             email = 'user0@admin.com',
             username = 'admin01',
-            password = hash_password('1234'),  # hash the password using the configured hashing algorithm
+            password = generate_password_hash('1234'),  # hash the password using the configured hashing algorithm
             roles = ['admin','user'] # assign roles to the user, can't add roles that do not exist  
 
         )
@@ -36,7 +37,7 @@ with app.app_context(): # all the crud operations and database initializations s
         user = app.security.datastore.create_user(
             email = 'user01@user.com',
             username = 'user01',
-            password = hash_password('1234'),  # hash the password using the configured hashing algorithm
+            password = generate_password_hash('1234'),  # hash the password using the configured hashing algorithm
             roles = ['user']  # assign roles to the user, can't add roles that do not exist
 
         )

@@ -73,10 +73,45 @@ class TransApi(Resource):
             return {"message": "One or more of required fields are missing"}, 400
         db.session.add(transaction)  # add the transaction to the session
         db.session.commit()  # commit the session to save the transaction to the database
-        return {"message": "Transaction created successfully", "transaction_id": transaction.id}, 201
-api.add_resource(TransApi, '/api/get','/api/create')  # add the TransApi resource to the API with the specified endpoint
+        return {"message": "Transaction created successfully", "transaction_id": transaction.id}, 200
+    
+    
+    
+    @auth_required('token')  # this decorator ensures that the user is authenticated before accessing the route
+    @roles_accepted('admin', 'user')  # this decorator ensures that the user has the 'admin' or 'user' role
+    def put(self,transaction_id):
+        args = parser.parse_args()
+        transaction = Transactions.query.get(transaction_id)
+        if not transaction:
+            return {"message": "Transaction not found"}, 404
+        transaction.name = args.get('name', transaction.name)  # update the name if provided, else keep the existing name
+        transaction.type = args.get('type', transaction.type)  # update the type if provided, else keep the existing type
+        transaction.date = args.get('date', transaction.date)  # update the date if provided, else keep the existing date
+        transaction.source_city = args.get('source_city', transaction.source_city)  # update the source city if provided, else keep the existing source city
+        transaction.destination_city = args.get('destination_city', transaction.destination_city)  # update the destination city if provided, else keep the existing destination city
+        transaction.description = args.get('description', None)
+        db.session.commit()  # commit the session to save the changes to the database
+        return {"message": "Transaction updated successfully"}, 200
+    
+
+
+
+    @auth_required('token')  # this decorator ensures that the user is authenticated before accessing the route
+    @roles_accepted('admin', 'user')  # this decorator ensures that the user
+    def delete(self, transaction_id):
+        transaction = Transactions.query.get(transaction_id)
+        if not transaction:
+            return {"message": "Transaction not found"}, 404
+        db.session.delete(transaction)  # delete the transaction from the session
+        db.session.commit()  # commit the session to save the changes to the database
+        return {"message": "Transaction deleted successfully"}, 200
+
+api.add_resource(TransApi, '/api/get',
+                 '/api/create',
+                 '/api/update/<int:transaction_id>',
+                 '/api/delete/<int:transaction_id>')  # add the TransApi resource to the API with the specified endpoint
         
-         
+    
 
 
 
